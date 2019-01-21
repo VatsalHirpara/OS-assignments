@@ -54,18 +54,33 @@ public class sim1 implements Runnable{
 		Process p;
 		if(scheduling_algo.equals("FCFS")){
 			
-			while(process_list.isEmpty()==false){
-				if(sys_time==p.arrival_time)
+			Process first=process_list.get(0);
+			if( sys_time == ((first).arrival_time) ){
+				ready_queue.add(first);
+				process_list.remove(0);
+			}
 			
-				
-				//process_list.remove(0);
-			}		
+			
+			if(ready_queue.size>0) Process p=ready_queue.peek();
+			while(p.burst_time>0){
+					System.out.printf("<system time %d> process %d is running\n",Sys_time++,p.pid);
+					p.burst_time--;
+			}
+			
+			
+			try 
+			{
+    			Thread.sleep(1000);
+			}	 
+			catch(InterruptedException e)
+			{}			
+			sys_time++;
+			
 		}
-		
-	
+}
 		
 
-	}
+	
 		
 	
     public static void main(String[] args) throws FileNotFoundException { 		
