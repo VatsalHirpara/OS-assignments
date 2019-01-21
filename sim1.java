@@ -48,34 +48,49 @@ public class sim1 implements Runnable{
 			process_list.add(temp);
 		}
 		
-		int sys_time=0;
+
 		
 		Queue<Process> ready_queue = new LinkedList<>();
 		Process p;
+		int sys_time=0;
 		if(scheduling_algo.equals("FCFS")){
 			
-			Process first=process_list.get(0);
-			if( sys_time == ((first).arrival_time) ){
-				ready_queue.add(first);
-				process_list.remove(0);
-			}
-			
-			
-			if(ready_queue.size>0) Process p=ready_queue.peek();
-			while(p.burst_time>0){
-					System.out.printf("<system time %d> process %d is running\n",Sys_time++,p.pid);
-					p.burst_time--;
-			}
-			
-			
-			try 
+			while(process_list.isEmpty()==false)
 			{
-    			Thread.sleep(1000);
-			}	 
-			catch(InterruptedException e)
-			{}			
-			sys_time++;
+				Process first=process_list.get(0);
+				if( sys_time == ((first).arrival_time) ){
+					ready_queue.add(first);
+					process_list.remove(0);
+				}
 			
+			
+				if(ready_queue.size()>0){
+					Process current=ready_queue.peek();
+					while(current.burst_time>0){
+						System.out.printf("<system time %d> process %d is running\n",sys_time++,current.pid);
+						current.burst_time--;
+						try {
+    						Thread.sleep(500);
+						}	 
+						catch(InterruptedException e)
+						{
+						}						
+					}
+					ready_queue.remove();
+				}
+
+				else{
+					System.out.printf("<system time %d> Ready queue is empty at the moment\n",sys_time++);
+			
+					try {
+    				Thread.sleep(500);
+					}	 
+					catch(InterruptedException e)
+					{	
+					}	
+				}		
+			
+			}
 		}
 }
 		
