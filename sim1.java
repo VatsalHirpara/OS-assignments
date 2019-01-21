@@ -59,18 +59,20 @@ public class sim1 implements Runnable{
 		if(scheduling_algo.equals("FCFS")){
 			
 			while(process_list.isEmpty()==false || ready_queue.size()>0){	
-					
-				
+		
 				
 				if(process_list.size()>0){
 					while(sys_time==process_list.get(0).arrival_time){
 						ready_queue.add(process_list.get(0));	
 						process_list.remove(0);
 						if(ready_queue.size()==0 || process_list.size()==0 ) break;	
-					}
+					}	
 				}
-			
-				if(ready_queue.peek().burst_time>0 ){
+				
+				if(ready_queue.size()==0){
+					System.out.println("idle");
+				}
+				else if(ready_queue.peek().burst_time>0 ){
 					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
 					ready_queue.peek().burst_time--;
 				}
@@ -80,9 +82,7 @@ public class sim1 implements Runnable{
 					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
 					ready_queue.peek().burst_time--;
 				}
-				else if(ready_queue.size()==0){
-					System.out.println("idle");
-				}
+				 
 				
 			sys_time++;
 			}
