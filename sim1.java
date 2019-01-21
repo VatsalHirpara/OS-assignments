@@ -58,57 +58,35 @@ public class sim1 implements Runnable{
 		int sys_time=0;
 		if(scheduling_algo.equals("FCFS")){
 			
-			while(process_list.isEmpty()==false)
-			{
-				
-			//	if(sys_time==5) {System.out.println(process_list.get(0).arrival_time);System.exit(0);}
-				
-				while( sys_time == ((process_list.get(0)).arrival_time) ){
-				
-					ready_queue.add(process_list.get(0));
-					process_list.remove(0);
-				}
-			
-				
-				if(ready_queue.size()>0){
-					while(ready_queue.peek().burst_time>0){
-						System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
-						ready_queue.peek().burst_time--;
-						try {
-    						Thread.sleep(10);
-						}	 
-						catch(InterruptedException e)
-						{
-						}
-						
-				//if(sys_time==6) {System.out.println(process_list.get(0).arrival_time);System.exit(0);}
-						
-						if(process_list.isEmpty()==false){
-							while( sys_time == process_list.get(0).arrival_time){
-								ready_queue.add(process_list.get(0));
-								process_list.remove(0);
-								if(process_list.isEmpty()==true)break;
-							}					
-						}
-						sys_time++;
-					}
-					ready_queue.remove();
-
+			while(process_list.isEmpty()==false || ready_queue.size()>0){	
 					
+				
+				
+				if(process_list.size()>0){
+					while(sys_time==process_list.get(0).arrival_time){
+						ready_queue.add(process_list.get(0));	
+						process_list.remove(0);
+						if(ready_queue.size()==0 || process_list.size()==0 ) break;	
+					}
 				}
-
-				else{
-					System.out.printf("<system time %d> Ready queue is empty at the moment\n",sys_time++);
 			
-					try {
-    				Thread.sleep(1000);
-					}	 
-					catch(InterruptedException e)
-					{	
-					}	
-				}		
-			
+				if(ready_queue.peek().burst_time>0 ){
+					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
+					ready_queue.peek().burst_time--;
+				}
+				else if (ready_queue.peek().burst_time==0 )  {
+					ready_queue.remove(); 
+					if(ready_queue.size()==0){continue;}
+					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
+					ready_queue.peek().burst_time--;
+				}
+				else if(ready_queue.size()==0){
+					System.out.println("idle");
+				}
+				
+			sys_time++;
 			}
+		
 		}
 }
 		
@@ -182,4 +160,61 @@ public class sim1 implements Runnable{
 */	
 
 
+/**------------------------------------------------------------------------------------------------------*/
 
+/*
+			while(process_list.isEmpty()==false)
+			{
+				
+			//	if(sys_time==5) {System.out.println(process_list.get(0).arrival_time);System.exit(0);}
+				
+				while( sys_time == ((process_list.get(0)).arrival_time) ){
+				
+					ready_queue.add(process_list.get(0));
+					process_list.remove(0);
+				}
+			
+				
+				if(ready_queue.size()>0){
+					while(ready_queue.peek().burst_time>0){
+						System.out.printf("<system time %d> process %d is running queue %d \n",sys_time,ready_queue.peek().pid,ready_queue.peek().pid);
+						ready_queue.peek().burst_time--;
+						try {
+    						Thread.sleep(10);	
+						}	 
+						catch(InterruptedException e)
+						{
+						}
+						
+				//if(sys_time==6) {System.out.println(process_list.get(0).arrival_time);System.exit(0);}
+						
+						if(process_list.isEmpty()==false){
+							while( sys_time == process_list.get(0).arrival_time){
+								ready_queue.add(process_list.get(0));
+								process_list.remove(0);
+								if(process_list.isEmpty()==true)break;
+							}					
+						}
+						sys_time++;
+					}
+					ready_queue.remove();
+
+					
+				}
+
+				else{
+					System.out.printf("<system time %d> Ready queue is empty at the moment\n",sys_time++);
+			
+					try {
+    				Thread.sleep(10);
+					}	 
+					catch(InterruptedException e)
+					{	
+					}	
+				}		
+			
+			}
+
+
+*/
+/*-------------------------------------------------------------------------------------------------------------------*/
