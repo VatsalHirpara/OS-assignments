@@ -1,8 +1,11 @@
-import java.io.*; 
-import java.util.*;
 /*
+	Programming Assignment: CPU Scheduling Simulator (Lab1)
 	Vatsal Hirpara 201601239
 */
+
+import java.io.*; 
+import java.util.*;
+
 class Process{
 	int pid,arrival_time,burst_time;
 	public Process(int p,int a,int b){
@@ -51,39 +54,54 @@ public class sim1 implements Runnable{
 
 		
 		Queue<Process> ready_queue = new LinkedList<>();
-		Process p;
+		Process p,first;
 		int sys_time=0;
 		if(scheduling_algo.equals("FCFS")){
 			
 			while(process_list.isEmpty()==false)
 			{
-				Process first=process_list.get(0);
-				if( sys_time == ((first).arrival_time) ){
-					ready_queue.add(first);
+				
+			//	if(sys_time==5) {System.out.println(process_list.get(0).arrival_time);System.exit(0);}
+				
+				while( sys_time == ((process_list.get(0)).arrival_time) ){
+				
+					ready_queue.add(process_list.get(0));
 					process_list.remove(0);
 				}
 			
-			
+				
 				if(ready_queue.size()>0){
-					Process current=ready_queue.peek();
-					while(current.burst_time>0){
-						System.out.printf("<system time %d> process %d is running\n",sys_time++,current.pid);
-						current.burst_time--;
+					while(ready_queue.peek().burst_time>0){
+						System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
+						ready_queue.peek().burst_time--;
 						try {
-    						Thread.sleep(500);
+    						Thread.sleep(10);
 						}	 
 						catch(InterruptedException e)
 						{
-						}						
+						}
+						
+				//if(sys_time==6) {System.out.println(process_list.get(0).arrival_time);System.exit(0);}
+						
+						if(process_list.isEmpty()==false){
+							while( sys_time == process_list.get(0).arrival_time){
+								ready_queue.add(process_list.get(0));
+								process_list.remove(0);
+								if(process_list.isEmpty()==true)break;
+							}					
+						}
+						sys_time++;
 					}
 					ready_queue.remove();
+
+					
 				}
 
 				else{
 					System.out.printf("<system time %d> Ready queue is empty at the moment\n",sys_time++);
 			
 					try {
-    				Thread.sleep(500);
+    				Thread.sleep(1000);
 					}	 
 					catch(InterruptedException e)
 					{	
@@ -140,7 +158,8 @@ public class sim1 implements Runnable{
 
 
 /*		
-		if(scheduling_algo.equals("FCFS")){
+		// Works if you don't consider empty cpu cycle or burst
+		if(scheduling_algo.equals("FCFS")){  
 			
 			for(Process p:process_list){
 				while(p.burst_time>0){
