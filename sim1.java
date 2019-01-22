@@ -67,6 +67,10 @@ public class sim1 implements Runnable{
 		boolean start_flag=true;
 		boolean end_flag=true;
 		
+		System.out.println("Schdeuling algorithm: " + scheduling_algo );
+		System.out.println("Total " + process_list.size() + " tasks are read from " + input_file );
+		System.out.println("============================================================");
+		
 		if(scheduling_algo.equals("FCFS")){
 			
 			while(process_list.isEmpty()==false || ready_queue.size()>0){	
@@ -144,10 +148,12 @@ public class sim1 implements Runnable{
 			waiting_time =(float) waiting_time/process_list2.size();
 			response_time=waiting_time;// For FCFS waiting time= response time
 			
+			System.out.println("============================================================");
 			System.out.printf("Average waiting time : %.2f \n" , waiting_time);
 			System.out.printf("Average response time : %.2f \n" ,response_time);
 			System.out.printf("Average turnaround time : %.2f \n" , turnaround_time);
-
+			System.out.println("============================================================");	
+/*
 			for(int i=1;i<=process_list2.size();i++){
 				System.out.print(start_time[i] + " ");
 			}
@@ -155,7 +161,7 @@ public class sim1 implements Runnable{
 			for(int i=1;i<=process_list2.size();i++){
 				System.out.print(end_time[i] + " ");
 			}
-			
+*/			
 		}
 }
 		
