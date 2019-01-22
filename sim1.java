@@ -44,7 +44,7 @@ public class sim1 implements Runnable{
 			System.out.println(ex);
 			System.exit(0);
 		}
-		
+			
 		ArrayList<Process> process_list=new ArrayList<Process>(); 
 		ArrayList<Process> process_list2=new ArrayList<Process>();
 		
@@ -57,6 +57,15 @@ public class sim1 implements Runnable{
 			process_list.add(temp);
 			process_list2.add(temp);
 		}
+
+		
+		sim1.sort(process_list,scheduling_algo);
+		
+		for(int i=0;i<process_list.size();i++){
+			System.out.print(process_list.get(i).pid+" ");
+		}
+			
+		
 		
 		int[] end_time = new int[process_list.size()+1]; 
 		int[] start_time = new int[process_list.size()+1];
@@ -72,7 +81,7 @@ public class sim1 implements Runnable{
 		System.out.println("============================================================");
 		
 		if(scheduling_algo.equals("FCFS")){
-			
+			sim1.sort(process_list,scheduling_algo);
 			while(process_list.isEmpty()==false || ready_queue.size()>0){	
 		
 				
@@ -153,7 +162,7 @@ public class sim1 implements Runnable{
 			System.out.printf("Average response time : %.2f \n" ,response_time);
 			System.out.printf("Average turnaround time : %.2f \n" , turnaround_time);
 			System.out.println("============================================================");	
-/*
+
 			for(int i=1;i<=process_list2.size();i++){
 				System.out.print(start_time[i] + " ");
 			}
@@ -161,11 +170,147 @@ public class sim1 implements Runnable{
 			for(int i=1;i<=process_list2.size();i++){
 				System.out.print(end_time[i] + " ");
 			}
-*/			
+			
 		}
-}
+		
+		
+		
+		if(scheduling_algo.equals("SJF")){
+			sim1.sort(process_list,scheduling_algo);
+			while(process_list.isEmpty()==false || ready_queue.size()>0){	
+		
+				
+				if(process_list.size()>0){
+					while(sys_time==process_list.get(0).arrival_time){
+						ready_queue.add(process_list.get(0));	
+						process_list.remove(0);
+						if(ready_queue.size()==0 || process_list.size()==0 ) break;	
+					}	
+				}
+				
+				if(ready_queue.size()==0){
+					System.out.printf("<system time %d> idle\n",sys_time);
+				}
+				else if(ready_queue.peek().burst_time>0 ){
+
+					if(start_flag==true && start_time[ready_queue.peek().pid]==0){
+						start_time[ready_queue.peek().pid]=sys_time;
+						start_flag=false;
+					}
+
+/*				
+					if(process_list.get(process_list.indexOf(ready_queue.peek())).burst_time==ready_queue.peek().burst_time){
+						start_time[ready_queue.peek().pid]=sys_time;
+					}
+*/
+
+					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
+					ready_queue.peek().burst_time--;
+				}
+				else if (ready_queue.peek().burst_time==0 )  {
+					
+				//	ready_queue.peek().end_time= sys_time;
+
+					System.out.printf("<system time %d> process %d is finished.......\n",sys_time,ready_queue.peek().pid);
+					if(process_list.isEmpty()==true){	
+						if(ready_queue.size()==1) System.out.printf("<system time %d> All processes finish ....................\n",sys_time);
+					}
+					
+					if(end_flag==true){
+						end_time[ready_queue.peek().pid]=sys_time;
+						end_flag=false;
+					}
+					ready_queue.remove();
+					start_flag=true;
+		 			end_flag=true;
+					 
+					if(ready_queue.size()==0){continue;}
+					
+					if(start_flag==true){
+						start_time[ready_queue.peek().pid]=sys_time;
+						start_flag=false;
+					}
+				
+					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
+					ready_queue.peek().burst_time--;
+				}
+				 	
+			sys_time++;
+			
+			}
+			
+			float turnaround_time=0,waiting_time=0,response_time=0;
+			for(int i=1;i<=process_list2.size();i++){
+				turnaround_time += end_time[i] - process_list2.get(i-1).arrival_time;
+			}
+			turnaround_time =(float) turnaround_time/process_list2.size();
+			//System.out.println(turnaround_time);
+			
+			for(int i=1;i<=process_list2.size();i++){
+				waiting_time += start_time[i]-process_list2.get(i-1).arrival_time;
+			}
+			waiting_time =(float) waiting_time/process_list2.size();
+			response_time=waiting_time;// For FCFS waiting time= response time
+			
+			System.out.println("============================================================");
+			System.out.printf("Average waiting time : %.2f \n" , waiting_time);
+			System.out.printf("Average response time : %.2f \n" ,response_time);
+			System.out.printf("Average turnaround time : %.2f \n" , turnaround_time);
+			System.out.println("============================================================");	
+			
+			for(int i=1;i<=process_list2.size();i++){
+				System.out.print(start_time[i] + " ");
+			}
+			System.out.println("");
+			for(int i=1;i<=process_list2.size();i++){
+				System.out.print(end_time[i] + " ");
+			}
+				
+		}
+	}
 		
 
+	public static void sort( ArrayList<Process> process_list,String s ){
+		Process temp;
+		boolean swapped=false;
+		for(int i=0;i<process_list.size()-1;i++){
+			swapped=false;	
+			for(int j = 0; j < process_list.size()-i-1; j++){
+				swapped=false;
+				if(process_list.get(j).arrival_time > process_list.get(j+1).arrival_time){
+					Collections.swap(process_list,j,j+1);
+					swapped=true;	
+				}
+				
+				else if(process_list.get(j).arrival_time == process_list.get(j+1).arrival_time ){
+					
+					if(s.equals("SJF")){
+						if(process_list.get(j).burst_time > process_list.get(j+1).burst_time ){
+							Collections.swap(process_list,j,j+1);
+							swapped=true;
+						}
+						else if (process_list.get(j).burst_time == process_list.get(j+1).burst_time){
+							if(process_list.get(j).pid > process_list.get(j+1).pid ){
+								Collections.swap(process_list,j,j+1);
+								swapped=true;
+							}
+						
+						}
+					}
+					
+					else if (s.equals("FCFS")){
+						if(process_list.get(j).pid > process_list.get(j+1).pid ){
+							Collections.swap(process_list,j,j+1);
+							swapped=true;
+						}
+					}
+						
+				}
+			}
+			if(swapped==false)
+				break;
+		}
+	} 
 	
 		
 	
