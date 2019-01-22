@@ -8,10 +8,12 @@ import java.util.*;
 
 class Process{
 	int pid,arrival_time,burst_time;
-	public Process(int p,int a,int b){
-		pid=p;
-		arrival_time=a;
-		burst_time=b;
+	//int start_time,end_time;
+	//waiting_time,response_time,turnaround_time;
+	public Process(int pid,int arrival_time,int burst_time){
+		this.pid=pid;
+		this.arrival_time=arrival_time;
+		this.burst_time=burst_time;
 	}
 }
 
@@ -46,6 +48,9 @@ public class sim1 implements Runnable{
 		ArrayList<Process> process_list=new ArrayList<Process>(); 
 		ArrayList<Process> process_list2=new ArrayList<Process>();
 		
+		 
+		//ArrayList<Integer> turnaround_time =new ArrayList<Integer>();
+		
 		Process temp;
 		while(in.hasNextInt()){
 			temp=new Process(in.nextInt(),in.nextInt(),in.nextInt());
@@ -53,11 +58,15 @@ public class sim1 implements Runnable{
 			process_list2.add(temp);
 		}
 		
-
+		int[] end_time = new int[process_list.size()+1]; 
+		int[] start_time = new int[process_list.size()+1];
 		
 		Queue<Process> ready_queue = new LinkedList<>();
 		Process p,first;
 		int sys_time=0;
+		boolean start_flag=true;
+		boolean end_flag=true;
+		
 		if(scheduling_algo.equals("FCFS")){
 			
 			while(process_list.isEmpty()==false || ready_queue.size()>0){	
@@ -75,25 +84,78 @@ public class sim1 implements Runnable{
 					System.out.printf("<system time %d> idle\n",sys_time);
 				}
 				else if(ready_queue.peek().burst_time>0 ){
+
+					if(start_flag==true && start_time[ready_queue.peek().pid]==0){
+						start_time[ready_queue.peek().pid]=sys_time;
+						start_flag=false;
+					}
+
+/*				
+					if(process_list.get(process_list.indexOf(ready_queue.peek())).burst_time==ready_queue.peek().burst_time){
+						start_time[ready_queue.peek().pid]=sys_time;
+					}
+*/
+
 					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
 					ready_queue.peek().burst_time--;
 				}
 				else if (ready_queue.peek().burst_time==0 )  {
 					
+				//	ready_queue.peek().end_time= sys_time;
+
 					System.out.printf("<system time %d> process %d is finished.......\n",sys_time,ready_queue.peek().pid);
 					if(process_list.isEmpty()==true){	
 						if(ready_queue.size()==1) System.out.printf("<system time %d> All processes finish ....................\n",sys_time);
 					}
-					ready_queue.remove(); 
+					
+					if(end_flag==true){
+						end_time[ready_queue.peek().pid]=sys_time;
+						end_flag=false;
+					}
+					ready_queue.remove();
+					start_flag=true;
+		 			end_flag=true;
+					 
 					if(ready_queue.size()==0){continue;}
+					
+					if(start_flag==true){
+						start_time[ready_queue.peek().pid]=sys_time;
+						start_flag=false;
+					}
+				
 					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
 					ready_queue.peek().burst_time--;
 				}
-				 
-				
+				 	
 			sys_time++;
+			
 			}
-		
+			
+			float turnaround_time=0,waiting_time=0,response_time=0;
+			for(int i=1;i<=process_list2.size();i++){
+				turnaround_time += end_time[i] - process_list2.get(i-1).arrival_time;
+			}
+			turnaround_time =(float) turnaround_time/process_list2.size();
+			//System.out.println(turnaround_time);
+			
+			for(int i=1;i<=process_list2.size();i++){
+				waiting_time += start_time[i]-process_list2.get(i-1).arrival_time;
+			}
+			waiting_time =(float) waiting_time/process_list2.size();
+			response_time=waiting_time;// For FCFS waiting time= response time
+			
+			System.out.printf("Average waiting time : %.2f \n" , waiting_time);
+			System.out.printf("Average response time : %.2f \n" ,response_time);
+			System.out.printf("Average turnaround time : %.2f \n" , turnaround_time);
+
+			for(int i=1;i<=process_list2.size();i++){
+				System.out.print(start_time[i] + " ");
+			}
+			System.out.println("");
+			for(int i=1;i<=process_list2.size();i++){
+				System.out.print(end_time[i] + " ");
+			}
+			
 		}
 }
 		
