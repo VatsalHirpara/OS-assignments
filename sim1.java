@@ -44,11 +44,13 @@ public class sim1 implements Runnable{
 		}
 		
 		ArrayList<Process> process_list=new ArrayList<Process>(); 
+		ArrayList<Process> process_list2=new ArrayList<Process>();
 		
 		Process temp;
 		while(in.hasNextInt()){
 			temp=new Process(in.nextInt(),in.nextInt(),in.nextInt());
 			process_list.add(temp);
+			process_list2.add(temp);
 		}
 		
 
@@ -70,13 +72,18 @@ public class sim1 implements Runnable{
 				}
 				
 				if(ready_queue.size()==0){
-					System.out.println("idle");
+					System.out.printf("<system time %d> idle\n",sys_time);
 				}
 				else if(ready_queue.peek().burst_time>0 ){
 					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
 					ready_queue.peek().burst_time--;
 				}
 				else if (ready_queue.peek().burst_time==0 )  {
+					
+					System.out.printf("<system time %d> process %d is finished.......\n",sys_time,ready_queue.peek().pid);
+					if(process_list.isEmpty()==true){	
+						if(ready_queue.size()==1) System.out.printf("<system time %d> All processes finish ....................\n",sys_time);
+					}
 					ready_queue.remove(); 
 					if(ready_queue.size()==0){continue;}
 					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
