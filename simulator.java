@@ -19,11 +19,11 @@ class Process{
 
 
 
-public class sim1 implements Runnable{
+public class simulator implements Runnable{
 
 	
 	String[] args;
-	public sim1(String[] arg) {
+	public simulator(String[] arg) {
     	 args=arg;
    	}		
 		
@@ -59,7 +59,7 @@ public class sim1 implements Runnable{
 		}
 
 		
-		sim1.sort(process_list,scheduling_algo);
+		simulator.sort(process_list,scheduling_algo);
 		
 		for(int i=0;i<process_list.size();i++){
 			System.out.print(process_list.get(i).pid+" ");
@@ -81,7 +81,7 @@ public class sim1 implements Runnable{
 		System.out.println("============================================================");
 		
 		if(scheduling_algo.equals("FCFS")){
-			sim1.sort(process_list,scheduling_algo);
+			simulator.sort(process_list,scheduling_algo);
 			while(process_list.isEmpty()==false || ready_queue.size()>0){	
 		
 				
@@ -176,7 +176,7 @@ public class sim1 implements Runnable{
 		
 		
 		if(scheduling_algo.equals("SJF")){
-			sim1.sort(process_list,scheduling_algo);
+			simulator.sort(process_list,scheduling_algo);
 			while(process_list.isEmpty()==false || ready_queue.size()>0){	
 		
 				
@@ -316,7 +316,7 @@ public class sim1 implements Runnable{
 	
     public static void main(String[] args) throws FileNotFoundException { 		
 		
-		sim1 m1=new sim1(args);  
+		simulator m1=new simulator(args);  
 		Thread t1 =new Thread(m1);  
 		t1.start();		
 		try{  
