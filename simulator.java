@@ -279,15 +279,8 @@ public class simulator implements Runnable{
 		
 		if(scheduling_algo.equals("RR")){
 			Queue<Process> ready_queue = new LinkedList<>();
-			sys_time=0;
-/*			
-			ready_queue.add(process_list.get(0));
-			System.out.println(process_list.get(0).time_quantum--);
-			System.out.println(process_list2.get(0).time_quantum);
-			System.out.println(ready_queue.peek().time_quantum);
-			System.exit(0);
-*/
-		
+			sys_time=0;start_flag=true;end_flag=true;
+	
 			while(process_list.isEmpty()==false || ready_queue.size()>0){
 			
 				if(process_list.size()>0){
@@ -311,7 +304,11 @@ public class simulator implements Runnable{
 				
 				else if(ready_queue.peek().burst_time>0 ){
 					
-
+					if(start_flag==true && start_time[ready_queue.peek().pid]==0){
+						start_time[ready_queue.peek().pid]=sys_time;
+						start_flag=false;
+					}
+					
 					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
 					ready_queue.peek().burst_time--;
 					ready_queue.peek().time_quantum--;
@@ -321,7 +318,16 @@ public class simulator implements Runnable{
 				else if (ready_queue.peek().burst_time==0 ){
 				
 					System.out.printf("<system time %d> process %d is finished.......\n",sys_time,ready_queue.peek().pid);
+						
+					end_time[ready_queue.peek().pid]=sys_time;
+				
 					ready_queue.remove();
+					start_flag=true;
+					
+					if(start_flag==true && ready_queue.size()>0 ){
+						start_time[ready_queue.peek().pid]=sys_time;
+						start_flag=false;
+					}
 					
 					if(ready_queue.size()>0){
 						System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
@@ -330,11 +336,21 @@ public class simulator implements Runnable{
 						
 					}
 					
-				}	
+				}
+				
+				if(process_list.isEmpty()==true && ready_queue.size()==0)
+				System.out.printf("<system time %d> All processes finish ....................\n",sys_time);	
 					
 			sys_time++;
 			}
-			
+		
+			for(int i=1;i<=process_list2.size();i++){
+				System.out.print(start_time[i] + " ");
+			}
+			System.out.println("");
+			for(int i=1;i<=process_list2.size();i++){
+				System.out.print(end_time[i] + " ");
+			}	
 			
 		}
 		
