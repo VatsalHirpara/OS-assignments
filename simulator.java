@@ -278,6 +278,7 @@ public class simulator implements Runnable{
 		}
 		
 		if(scheduling_algo.equals("RR")){
+			boolean[] start = new boolean[process_list.size()+1];
 			Queue<Process> ready_queue = new LinkedList<>();
 			sys_time=0;start_flag=true;end_flag=true;
 	
@@ -304,16 +305,15 @@ public class simulator implements Runnable{
 				
 				else if(ready_queue.peek().burst_time>0 ){
 					
-					if(start_flag==true && start_time[ready_queue.peek().pid]==0){
+					if( ready_queue.size()>0 && start[ready_queue.peek().pid]==false){
 						start_time[ready_queue.peek().pid]=sys_time;
-						start_flag=false;
+						start[ready_queue.peek().pid]=true;
 					}
 					
 					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
 					ready_queue.peek().burst_time--;
 					ready_queue.peek().time_quantum--;
-				}
-//coment : last					
+				}					
 
 				else if (ready_queue.peek().burst_time==0 ){
 				
@@ -324,9 +324,9 @@ public class simulator implements Runnable{
 					ready_queue.remove();
 					start_flag=true;
 					
-					if(start_flag==true && ready_queue.size()>0 ){
+					if( ready_queue.size()>0 && start[ready_queue.peek().pid]==false){
 						start_time[ready_queue.peek().pid]=sys_time;
-						start_flag=false;
+						start[ready_queue.peek().pid]=true;
 					}
 					
 					if(ready_queue.size()>0){
@@ -343,6 +343,24 @@ public class simulator implements Runnable{
 					
 			sys_time++;
 			}
+			
+			float turnaround_time=0,waiting_time=0,response_time=0;
+			for(int i=1;i<=process_list2.size();i++){
+				turnaround_time += end_time[i] - process_list2.get(i-1).arrival_time;
+			}
+			turnaround_time =(float) turnaround_time/process_list2.size();
+			
+			for(int i=1;i<=process_list2.size();i++){
+				response_time += start_time[i]-process_list2.get(i-1).arrival_time;
+			}
+			response_time =(float) response_time/process_list2.size();
+			
+			System.out.println("============================================================");
+			//System.out.printf("Average waiting time : %.2f \n" , waiting_time);
+			System.out.printf("Average response time : %.2f \n" ,response_time);
+			System.out.printf("Average turnaround time : %.2f \n" , turnaround_time);
+			System.out.println("============================================================");
+		
 		
 			for(int i=1;i<=process_list2.size();i++){
 				System.out.print(start_time[i] + " ");
@@ -422,147 +440,3 @@ public class simulator implements Runnable{
 		
 	}    
 } 
-
-/*		int pid[]=new int[21];           old input
-		int arrival_time[]=new int[21];
-		int burst_time[]=new int[21];
-		
-		int i=1;
-		while(in.hasNextInt()){
-			pid[i]=in.nextInt();
-			arrival_time[i]=in.nextInt();
-			burst_time[i]=in.nextInt();
-			i++;
-		}
-*/
-
-
-
-/*		System.out.println("start");
-		try 
-		{
-    		Thread.sleep(3000);
-		}	 
-		catch(InterruptedException e)
-		{}
-		System.out.println("slept for 3");
-*/
-
-
-/*		
-		// Works if you don't consider empty cpu cycle or burst
-		if(scheduling_algo.equals("FCFS")){  
-			
-			for(Process p:process_list){
-				while(p.burst_time>0){
-					System.out.printf("<system time %d> process %d is running\n",Sys_time++,p.pid);
-					p.burst_time--;
-					
-					try 
-					{
-    					Thread.sleep(1); // CPU burst time assumed 1ms 
-					}	 
-					catch(InterruptedException e)
-					{}
-					
-				}
-				System.out.printf("<system time %d> process %d is finished.......\n",Sys_time,p.pid);
-			}
-			System.out.printf("<system time %d> All processes finish ....................",Sys_time);
-					
-		}
-*/	
-
-
-/**------------------------------------------------------------------------------------------------------*/
-
-/*
-			while(process_list.isEmpty()==false)
-			{
-				
-			//	if(sys_time==5) {System.out.println(process_list.get(0).arrival_time);System.exit(0);}
-				
-				while( sys_time == ((process_list.get(0)).arrival_time) ){
-				
-					ready_queue.add(process_list.get(0));
-					process_list.remove(0);
-				}
-			
-				
-				if(ready_queue.size()>0){
-					while(ready_queue.peek().burst_time>0){
-						System.out.printf("<system time %d> process %d is running queue %d \n",sys_time,ready_queue.peek().pid,ready_queue.peek().pid);
-						ready_queue.peek().burst_time--;
-						try {
-    						Thread.sleep(10);	
-						}	 
-						catch(InterruptedException e)
-						{
-						}
-						
-				//if(sys_time==6) {System.out.println(process_list.get(0).arrival_time);System.exit(0);}
-						
-						if(process_list.isEmpty()==false){
-							while( sys_time == process_list.get(0).arrival_time){
-								ready_queue.add(process_list.get(0));
-								process_list.remove(0);
-								if(process_list.isEmpty()==true)break;
-							}					
-						}
-						sys_time++;
-					}
-					ready_queue.remove();
-					
-				}
-				else{
-					System.out.printf("<system time %d> Ready queue is empty at the moment\n",sys_time++);
-			
-					try {
-    				Thread.sleep(10);
-					}	 
-					catch(InterruptedException e)
-					{	
-					}	
-				}		
-			
-			}
-*/
-
-
-/*
-	if(s.equals("SJF")){
-						if(process_list.get(j).burst_time > process_list.get(j+1).burst_time ){
-							Collections.swap(process_list,j,j+1);
-							swapped=true;
-						}
-						else if (process_list.get(j).burst_time == process_list.get(j+1).burst_time){
-							if(process_list.get(j).pid > process_list.get(j+1).pid ){
-								Collections.swap(process_list,j,j+1);
-								swapped=true;
-							}
-						
-						}
-					}
-*/
-// =====================================
-//comment: last 
-
-//					if (ready_queue.peek().burst_time==0 ){
-//						System.out.printf("<system time %d> process %d is finished.......\n",sys_time,ready_queue.peek().pid);
-//						ready_queue.remove();
-	//				}
-					
-				
-			//     		else if (ready_queue.peek().burst_time==0){
-			//			ready_queue.remove();
-					
-/*		
-					if(!(ready_queue.peek().time_quantum-->0)){
-						ready_queue.peek().time_quantum=time_quantum;
-						ready_queue.add(ready_queue.peek());
-						ready_queue.remove();
-					}
-*/	
-
-
-
