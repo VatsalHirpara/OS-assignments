@@ -59,7 +59,7 @@ public class simulator implements Runnable{
 		}
 
 		
-		simulator.sort(process_list,scheduling_algo);
+		simulator.sort_FCFS(process_list);
 		
 		for(int i=0;i<process_list.size();i++){
 			System.out.print(process_list.get(i).pid+" ");
@@ -70,7 +70,7 @@ public class simulator implements Runnable{
 		int[] end_time = new int[process_list.size()+1]; 
 		int[] start_time = new int[process_list.size()+1];
 		
-		Queue<Process> ready_queue = new LinkedList<>();
+		
 		Process p,first;
 		int sys_time=0;
 		boolean start_flag=true;
@@ -81,7 +81,9 @@ public class simulator implements Runnable{
 		System.out.println("============================================================");
 		
 		if(scheduling_algo.equals("FCFS")){
-			simulator.sort(process_list,scheduling_algo);
+
+			Queue<Process> ready_queue = new LinkedList<>();
+			simulator.sort_FCFS(process_list);
 			while(process_list.isEmpty()==false || ready_queue.size()>0){	
 		
 				
@@ -169,14 +171,15 @@ public class simulator implements Runnable{
 			System.out.println("");
 			for(int i=1;i<=process_list2.size();i++){
 				System.out.print(end_time[i] + " ");
-			}
-			
+			}		
 		}
 		
-		
+		boolean flag=false;
 		
 		if(scheduling_algo.equals("SJF")){
-			simulator.sort(process_list,scheduling_algo);
+			
+			ArrayList<Process> ready_queue = new ArrayList<Process>();
+			simulator.sort_FCFS(process_list);
 			while(process_list.isEmpty()==false || ready_queue.size()>0){	
 		
 				
@@ -191,10 +194,10 @@ public class simulator implements Runnable{
 				if(ready_queue.size()==0){
 					System.out.printf("<system time %d> idle\n",sys_time);
 				}
-				else if(ready_queue.peek().burst_time>0 ){
+				else if(ready_queue.get(0).burst_time>0 ){
 
-					if(start_flag==true && start_time[ready_queue.peek().pid]==0){
-						start_time[ready_queue.peek().pid]=sys_time;
+					if(start_flag==true && start_time[ready_queue.get(0).pid]==0){
+						start_time[ready_queue.get(0).pid]=sys_time;
 						start_flag=false;
 					}
 
@@ -203,36 +206,48 @@ public class simulator implements Runnable{
 						start_time[ready_queue.peek().pid]=sys_time;
 					}
 */
+/*			
+					if( process_list2.get( process_list2.indexOf(ready_queue.get(0)) ).burst_time == ready_queue.get(0).burst_time )
+						sort_SJF(ready_queue);						
 
-					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
-					ready_queue.peek().burst_time--;
+					if(removed==false) sort_SJF(ready_queue);
+*/
+					
+					if(flag==false){
+						sort_SJF(ready_queue);
+						flag=true;
+					}
+
+					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.get(0).pid);
+					ready_queue.get(0).burst_time--;
 				}
-				else if (ready_queue.peek().burst_time==0 )  {
+				else if (ready_queue.get(0).burst_time==0 )  {
 					
 				//	ready_queue.peek().end_time= sys_time;
 
-					System.out.printf("<system time %d> process %d is finished.......\n",sys_time,ready_queue.peek().pid);
+					System.out.printf("<system time %d> process %d is finished.......\n",sys_time,ready_queue.get(0).pid);
 					if(process_list.isEmpty()==true){	
 						if(ready_queue.size()==1) System.out.printf("<system time %d> All processes finish ....................\n",sys_time);
 					}
 					
 					if(end_flag==true){
-						end_time[ready_queue.peek().pid]=sys_time;
+						end_time[ready_queue.get(0).pid]=sys_time;
 						end_flag=false;
 					}
-					ready_queue.remove();
+					ready_queue.remove(0);
+					sort_SJF(ready_queue);
 					start_flag=true;
 		 			end_flag=true;
 					 
 					if(ready_queue.size()==0){continue;}
 					
 					if(start_flag==true){
-						start_time[ready_queue.peek().pid]=sys_time;
+						start_time[ready_queue.get(0).pid]=sys_time;
 						start_flag=false;
 					}
 				
-					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
-					ready_queue.peek().burst_time--;
+					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.get(0).pid);
+					ready_queue.get(0).burst_time--;
 				}
 				 	
 			sys_time++;
@@ -257,20 +272,22 @@ public class simulator implements Runnable{
 			System.out.printf("Average response time : %.2f \n" ,response_time);
 			System.out.printf("Average turnaround time : %.2f \n" , turnaround_time);
 			System.out.println("============================================================");	
-			
+
 			for(int i=1;i<=process_list2.size();i++){
 				System.out.print(start_time[i] + " ");
 			}
 			System.out.println("");
 			for(int i=1;i<=process_list2.size();i++){
 				System.out.print(end_time[i] + " ");
-			}
-				
+			}			
+
 		}
+		
 	}
 		
 
-	public static void sort( ArrayList<Process> process_list,String s ){
+	public static void sort_FCFS( ArrayList<Process> process_list ){
+		if(process_list.isEmpty()==true ) return;
 		Process temp;
 		boolean swapped=false;
 		for(int i=0;i<process_list.size()-1;i++){
@@ -281,36 +298,42 @@ public class simulator implements Runnable{
 					Collections.swap(process_list,j,j+1);
 					swapped=true;	
 				}
-				
 				else if(process_list.get(j).arrival_time == process_list.get(j+1).arrival_time ){
 					
-					if(s.equals("SJF")){
-						if(process_list.get(j).burst_time > process_list.get(j+1).burst_time ){
-							Collections.swap(process_list,j,j+1);
-							swapped=true;
-						}
-						else if (process_list.get(j).burst_time == process_list.get(j+1).burst_time){
-							if(process_list.get(j).pid > process_list.get(j+1).pid ){
-								Collections.swap(process_list,j,j+1);
-								swapped=true;
-							}
-						
-						}
-					}
-					
-					else if (s.equals("FCFS")){
 						if(process_list.get(j).pid > process_list.get(j+1).pid ){
 							Collections.swap(process_list,j,j+1);
 							swapped=true;
 						}
-					}
-						
 				}
 			}
 			if(swapped==false)
 				break;
 		}
 	} 
+
+	public static void sort_SJF( ArrayList<Process> process_list ){
+	if(process_list.isEmpty()==true ) return;
+
+	Process temp;
+		boolean swapped=false;
+		for(int i=0;i<process_list.size()-1;i++){
+			swapped=false;	
+			for(int j = 0; j < process_list.size()-i-1; j++){
+				if(process_list.get(j).burst_time > process_list.get(j+1).burst_time){
+					Collections.swap(process_list,j,j+1);
+					swapped=true;
+				}
+				else if (process_list.get(j).burst_time == process_list.get(j+1).burst_time){
+					if(process_list.get(j).arrival_time > process_list.get(j+1).arrival_time){
+						Collections.swap(process_list,j,j+1);
+						swapped=true;
+					}
+				}
+			}
+			if(swapped==false)
+				break;
+		}
+	}
 	
 		
 	
@@ -437,4 +460,26 @@ public class simulator implements Runnable{
 
 
 */
+
+
+/*
+	if(s.equals("SJF")){
+						if(process_list.get(j).burst_time > process_list.get(j+1).burst_time ){
+							Collections.swap(process_list,j,j+1);
+							swapped=true;
+						}
+						else if (process_list.get(j).burst_time == process_list.get(j+1).burst_time){
+							if(process_list.get(j).pid > process_list.get(j+1).pid ){
+								Collections.swap(process_list,j,j+1);
+								swapped=true;
+							}
+						
+						}
+					}
+
+*/
+
+
+
+
 /*-------------------------------------------------------------------------------------------------------------------*/
