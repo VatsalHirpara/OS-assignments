@@ -8,12 +8,12 @@ import java.util.*;
 
 class Process{
 	int pid,arrival_time,burst_time;
-	//int start_time,end_time;
-	//waiting_time,response_time,turnaround_time;
-	public Process(int pid,int arrival_time,int burst_time){
+	int time_quantum; //time_quantum
+	public Process(int pid,int arrival_time,int burst_time,int time_quantum){
 		this.pid=pid;
 		this.arrival_time=arrival_time;
 		this.burst_time=burst_time;
+		this.time_quantum=time_quantum;
 	}
 }
 
@@ -31,9 +31,14 @@ public class simulator implements Runnable{
 	
 		String input_file = args[0];
 		String scheduling_algo=args[1];
-
-		if(scheduling_algo.equals("RR")){		
-			int time_quantum = Integer.parseInt(args[2]);
+		int time_quantum=0;
+		if(scheduling_algo.equals("RR") && args.length==2){
+			System.out.println("Please enter time quantum");
+			System.exit(0);
+		}
+		if(scheduling_algo.equals("RR") && args.length>=3){		
+			time_quantum = Integer.parseInt(args[2]);
+			//Process.tq=time_quantum;
         } 
 		
 		Scanner in=null;
@@ -53,7 +58,7 @@ public class simulator implements Runnable{
 		
 		Process temp;
 		while(in.hasNextInt()){
-			temp=new Process(in.nextInt(),in.nextInt(),in.nextInt());
+			temp=new Process(in.nextInt(),in.nextInt(),in.nextInt(),time_quantum);
 			process_list.add(temp);
 			process_list2.add(temp);
 		}
@@ -272,6 +277,67 @@ public class simulator implements Runnable{
 
 		}
 		
+		if(scheduling_algo.equals("RR")){
+			Queue<Process> ready_queue = new LinkedList<>();
+			sys_time=0;
+/*			
+			ready_queue.add(process_list.get(0));
+			System.out.println(process_list.get(0).time_quantum--);
+			System.out.println(process_list2.get(0).time_quantum);
+			System.out.println(ready_queue.peek().time_quantum);
+			System.exit(0);
+*/
+		
+			while(process_list.isEmpty()==false || ready_queue.size()>0){
+			
+				if(process_list.size()>0){
+					while(sys_time==process_list.get(0).arrival_time){
+						ready_queue.add(process_list.get(0));	
+						process_list.remove(0);
+						if(ready_queue.size()==0 || process_list.size()==0 ) break;	
+					}	
+				}
+				
+				if(ready_queue.size()==0){
+					System.out.printf("<system time %d> idle\n",sys_time);
+				}
+				
+				else if(ready_queue.peek().burst_time>0 ){
+					
+
+					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
+					ready_queue.peek().burst_time--;
+					ready_queue.peek().time_quantum--;
+					
+					
+					if(ready_queue.peek().burst_time>0 && ready_queue.peek().time_quantum==0 ){
+						ready_queue.peek().time_quantum=time_quantum;
+						ready_queue.add(ready_queue.peek());
+						ready_queue.remove();
+					}
+					
+				}
+//coment : last					
+
+				else if (ready_queue.peek().burst_time==0 ){
+				
+					System.out.printf("<system time %d> process %d is finished.......\n",sys_time,ready_queue.peek().pid);
+					ready_queue.remove();
+					
+					if(ready_queue.size()>0){
+						System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
+						ready_queue.peek().burst_time--;
+						ready_queue.peek().time_quantum--;
+						
+					}
+					
+				}			
+			sys_time++;
+			}
+			
+			
+		}
+		
 	}
 		
 
@@ -430,10 +496,8 @@ public class simulator implements Runnable{
 						sys_time++;
 					}
 					ready_queue.remove();
-
 					
 				}
-
 				else{
 					System.out.printf("<system time %d> Ready queue is empty at the moment\n",sys_time++);
 			
@@ -446,8 +510,6 @@ public class simulator implements Runnable{
 				}		
 			
 			}
-
-
 */
 
 
@@ -465,10 +527,26 @@ public class simulator implements Runnable{
 						
 						}
 					}
-
 */
+// =====================================
+//comment: last 
+
+//					if (ready_queue.peek().burst_time==0 ){
+//						System.out.printf("<system time %d> process %d is finished.......\n",sys_time,ready_queue.peek().pid);
+//						ready_queue.remove();
+	//				}
+					
+				
+			//     		else if (ready_queue.peek().burst_time==0){
+			//			ready_queue.remove();
+					
+/*		
+					if(!(ready_queue.peek().time_quantum-->0)){
+						ready_queue.peek().time_quantum=time_quantum;
+						ready_queue.add(ready_queue.peek());
+						ready_queue.remove();
+					}
+*/	
 
 
 
-
-/*-------------------------------------------------------------------------------------------------------------------*/
