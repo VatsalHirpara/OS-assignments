@@ -298,6 +298,13 @@ public class simulator implements Runnable{
 					}	
 				}
 				
+				if(ready_queue.peek().burst_time>0 && ready_queue.peek().time_quantum==0 ){
+						ready_queue.peek().time_quantum=time_quantum;
+						ready_queue.add(ready_queue.peek());
+						ready_queue.remove();
+				}
+				
+				
 				if(ready_queue.size()==0){
 					System.out.printf("<system time %d> idle\n",sys_time);
 				}
@@ -308,14 +315,6 @@ public class simulator implements Runnable{
 					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
 					ready_queue.peek().burst_time--;
 					ready_queue.peek().time_quantum--;
-					
-					
-					if(ready_queue.peek().burst_time>0 && ready_queue.peek().time_quantum==0 ){
-						ready_queue.peek().time_quantum=time_quantum;
-						ready_queue.add(ready_queue.peek());
-						ready_queue.remove();
-					}
-					
 				}
 //coment : last					
 
@@ -331,7 +330,8 @@ public class simulator implements Runnable{
 						
 					}
 					
-				}			
+				}	
+					
 			sys_time++;
 			}
 			
