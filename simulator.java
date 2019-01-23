@@ -193,6 +193,7 @@ public class simulator implements Runnable{
 				
 				if(ready_queue.size()==0){
 					System.out.printf("<system time %d> idle\n",sys_time);
+					flag=false;
 				}
 				else if(ready_queue.get(0).burst_time>0 ){
 
@@ -201,17 +202,6 @@ public class simulator implements Runnable{
 						start_flag=false;
 					}
 
-/*				
-					if(process_list.get(process_list.indexOf(ready_queue.peek())).burst_time==ready_queue.peek().burst_time){
-						start_time[ready_queue.peek().pid]=sys_time;
-					}
-*/
-/*			
-					if( process_list2.get( process_list2.indexOf(ready_queue.get(0)) ).burst_time == ready_queue.get(0).burst_time )
-						sort_SJF(ready_queue);						
-
-					if(removed==false) sort_SJF(ready_queue);
-*/
 					
 					if(flag==false){
 						sort_SJF(ready_queue);
