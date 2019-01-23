@@ -196,17 +196,16 @@ public class simulator implements Runnable{
 					flag=false;
 				}
 				else if(ready_queue.get(0).burst_time>0 ){
+					if(flag==false){
+						sort_SJF(ready_queue);
+						flag=true;
+					}
 
 					if(start_flag==true && start_time[ready_queue.get(0).pid]==0){
 						start_time[ready_queue.get(0).pid]=sys_time;
 						start_flag=false;
 					}
 
-					
-					if(flag==false){
-						sort_SJF(ready_queue);
-						flag=true;
-					}
 
 					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.get(0).pid);
 					ready_queue.get(0).burst_time--;
