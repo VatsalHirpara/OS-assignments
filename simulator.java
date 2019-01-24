@@ -9,6 +9,7 @@ import java.util.*;
 class Process{
 	int pid,arrival_time,burst_time;
 	int time_quantum; //time_quantum for RR
+	boolean first_run=false;
 	public Process(int pid,int arrival_time,int burst_time,int time_quantum){
 		this.pid=pid;
 		this.arrival_time=arrival_time;
@@ -281,7 +282,9 @@ public class simulator implements Runnable{
 		}
 		
 		if(scheduling_algo.equals("RR")){
-			ArrayList<Process>[] wait_time = new ArrayList[process_list.size()+1];
+//			ArrayList<Integer>[] wait_time = new ArrayList[process_list.size()+1];
+			HashMap< Integer,ArrayList<Integer> > map = new HashMap<>();
+			
  						
 			boolean[] start = new boolean[process_list.size()+1];
 			Queue<Process> ready_queue = new LinkedList<>();
@@ -298,8 +301,22 @@ public class simulator implements Runnable{
 				}
 				
 				if(ready_queue.peek().burst_time>0 && ready_queue.peek().time_quantum==0 ){
-						ready_queue.peek().time_quantum=time_quantum;
-						ready_queue.add(ready_queue.peek());
+					ready_queue.peek().time_quantum=time_quantum;
+					ready_queue.add(ready_queue.peek());
+						
+					if(!map.containsKey(ready_queue.peek().pid))
+           				{
+                			ArrayList<Integer> a = new ArrayList<>();
+                			a.add(sys_time);
+                			map.put(ready_queue.peek().pid,a);
+            			}
+            			else if(map.containsKey(ready_queue.peek().pid))
+            			{
+                			ArrayList<Integer> a = map.get(ready_queue.peek().pid);
+                			a.add(sys_time);
+                			map.put(ready_queue.peek().pid,a);
+            			}
+	
 						ready_queue.remove();
 				}
 				
@@ -309,15 +326,31 @@ public class simulator implements Runnable{
 				}
 				
 				else if(ready_queue.peek().burst_time>0 ){
-					
 					if( ready_queue.size()>0 && start[ready_queue.peek().pid]==false){
 						start_time[ready_queue.peek().pid]=sys_time;
 						start[ready_queue.peek().pid]=true;
+						ready_queue.peek().first_run=true;
 					}
+					
+
+/*				
+					if(ready_queue.peek().first_run==false && ready_queue.peek().burst_time>0){
+					
+						
+						ArrayList<Integer> a = map.get(ready_queue.peek().pid);
+                		if(a!=null){
+                			a.add(sys_time);
+                			map.put(ready_queue.peek().pid,a);
+                		}
+					}
+*/					
+	
 					
 					System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
 					ready_queue.peek().burst_time--;
 					ready_queue.peek().time_quantum--;
+			//		if(start[ready_queue.peek().pid]==false)ready_queue.peek().started=false;
+					
 				}					
 
 				else if (ready_queue.peek().burst_time==0 ){
@@ -332,9 +365,20 @@ public class simulator implements Runnable{
 					if( ready_queue.size()>0 && start[ready_queue.peek().pid]==false){
 						start_time[ready_queue.peek().pid]=sys_time;
 						start[ready_queue.peek().pid]=true;
+						ready_queue.peek().first_run=true;
+					}
+					
+					if( ready_queue.size()>0 && ready_queue.peek().first_run==false && ready_queue.peek().burst_time>0){
+					
+						
+						ArrayList<Integer> a = map.get(ready_queue.peek().pid);
+                			a.add(sys_time);
+                			map.put(ready_queue.peek().pid,a);
+                		
 					}
 					
 					if(ready_queue.size()>0){
+						ready_queue.peek().first_run=false;
 						System.out.printf("<system time %d> process %d is running\n",sys_time,ready_queue.peek().pid);
 						ready_queue.peek().burst_time--;
 						ready_queue.peek().time_quantum--;
@@ -373,7 +417,11 @@ public class simulator implements Runnable{
 			System.out.println("");
 			for(int i=1;i<=process_list2.size();i++){
 				System.out.print(end_time[i] + " ");
-			}	
+			}
+			
+			for(int i=1;i<=process_list2.size();i++)
+			System.out.println(map.get(i));
+				
 			
 		}
 		
@@ -382,7 +430,7 @@ public class simulator implements Runnable{
 
 	public static void sort_FCFS( ArrayList<Process> process_list ){
 		if(process_list.isEmpty()==true ) return;
-		Process temp;
+	//	Process temp;
 		boolean swapped=false;
 		for(int i=0;i<process_list.size()-1;i++){
 			swapped=false;	
@@ -408,7 +456,7 @@ public class simulator implements Runnable{
 	public static void sort_SJF( ArrayList<Process> process_list ){
 	if(process_list.isEmpty()==true ) return;
 
-	Process temp;
+//	Process temp;
 		boolean swapped=false;
 		for(int i=0;i<process_list.size()-1;i++){
 			swapped=false;	
