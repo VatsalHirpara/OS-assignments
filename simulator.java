@@ -8,7 +8,7 @@ import java.util.*;
 
 class Process{
 	int pid,arrival_time,burst_time;
-	int time_quantum; //time_quantum
+	int time_quantum; //time_quantum for RR
 	public Process(int pid,int arrival_time,int burst_time,int time_quantum){
 		this.pid=pid;
 		this.arrival_time=arrival_time;
@@ -28,10 +28,20 @@ public class simulator implements Runnable{
    	}		
 		
 	public void run(){  
-	
+		
+		if(args.length==1){
+			System.out.println("Please enter name of scheduling algorithm after input file");
+			System.exit(0);
+		}
+		
 		String input_file = args[0];
 		String scheduling_algo=args[1];
 		int time_quantum=0;
+		
+		if(args.length==1){
+			System.out.println("Please enter name of scheduling algorithm in uppercase");
+			System.exit(0);
+		}
 		if(scheduling_algo.equals("RR") && args.length==2){
 			System.out.println("Please enter time quantum");
 			System.exit(0);
@@ -65,17 +75,12 @@ public class simulator implements Runnable{
 
 		
 		simulator.sort_FCFS(process_list);
-		
-		for(int i=0;i<process_list.size();i++){
-			System.out.print(process_list.get(i).pid+" ");
-		}
+
 			
 		
 		
 		int[] end_time = new int[process_list.size()+1]; 
 		int[] start_time = new int[process_list.size()+1];
-		
-		
 		Process p,first;
 		int sys_time=0;
 		boolean start_flag=true;
@@ -217,8 +222,6 @@ public class simulator implements Runnable{
 				}
 				else if (ready_queue.get(0).burst_time==0 )  {
 					
-				//	ready_queue.peek().end_time= sys_time;
-
 					System.out.printf("<system time %d> process %d is finished.......\n",sys_time,ready_queue.get(0).pid);
 					if(process_list.isEmpty()==true){	
 						if(ready_queue.size()==1) System.out.printf("<system time %d> All processes finish ....................\n",sys_time);
@@ -278,6 +281,8 @@ public class simulator implements Runnable{
 		}
 		
 		if(scheduling_algo.equals("RR")){
+			ArrayList<Process>[] wait_time = new ArrayList[process_list.size()+1];
+ 						
 			boolean[] start = new boolean[process_list.size()+1];
 			Queue<Process> ready_queue = new LinkedList<>();
 			sys_time=0;start_flag=true;end_flag=true;
