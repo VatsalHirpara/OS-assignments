@@ -7,13 +7,14 @@ import java.io.*;
 import java.util.*;
 
 class Process{
-	int pid,arrival_time,burst_time;
+	int pid,arrival_time,burst_time,burst_time2;
 	int time_quantum; //time_quantum for RR
 	public Process(int pid,int arrival_time,int burst_time,int time_quantum){
 		this.pid=pid;
 		this.arrival_time=arrival_time;
 		this.burst_time=burst_time;
 		this.time_quantum=time_quantum;
+		this.burst_time2=burst_time;
 	}
 }
 
@@ -75,8 +76,13 @@ public class simulator implements Runnable{
 
 		
 		simulator.sort_FCFS(process_list);
+		
+		int[] burst_time = new int[process_list.size()+1]; 
+		for(int i=0;i<process_list.size();i++){
+			burst_time[process_list.get(i).pid]=process_list.get(i).burst_time;
+		}
 
-			
+
 		
 		
 		int[] end_time = new int[process_list.size()+1]; 
@@ -281,7 +287,6 @@ public class simulator implements Runnable{
 		}
 		
 		if(scheduling_algo.equals("RR")){
-			ArrayList<Process>[] wait_time = new ArrayList[process_list.size()+1];
  						
 			boolean[] start = new boolean[process_list.size()+1];
 			Queue<Process> ready_queue = new LinkedList<>();
@@ -360,21 +365,21 @@ public class simulator implements Runnable{
 			}
 			response_time =(float) response_time/process_list2.size();
 			
+			for(int i=1;i<=process_list2.size();i++){
+				waiting_time+= end_time[i] - process_list2.get(i-1).arrival_time - burst_time[i];
+			}
+				
+			waiting_time = (float)  waiting_time/ ( end_time.length - 1);
+		
+		
+
 			System.out.println("============================================================");
-			//System.out.printf("Average waiting time : %.2f \n" , waiting_time);
+			System.out.printf("Average waiting time : %.2f \n" , waiting_time);
 			System.out.printf("Average response time : %.2f \n" ,response_time);
 			System.out.printf("Average turnaround time : %.2f \n" , turnaround_time);
 			System.out.println("============================================================");
 		
-		
-			for(int i=1;i<=process_list2.size();i++){
-				System.out.print(start_time[i] + " ");
-			}
-			System.out.println("");
-			for(int i=1;i<=process_list2.size();i++){
-				System.out.print(end_time[i] + " ");
-			}	
-			
+	
 		}
 		
 	}
