@@ -1,24 +1,10 @@
 /*
-	Programming Assignment: CPU Scheduling Simulator (Lab1)
-	Vatsal Hirpara 201601239
+	CPU Scheduling Simulator
+	Author: Vatsal Hirpara 
 */
 
 import java.io.*; 
 import java.util.*;
-
-class Process{
-	int pid,arrival_time,burst_time,burst_time2;
-	int time_quantum; //time_quantum for RR
-	public Process(int pid,int arrival_time,int burst_time,int time_quantum){
-		this.pid=pid;
-		this.arrival_time=arrival_time;
-		this.burst_time=burst_time;
-		this.time_quantum=time_quantum;
-		this.burst_time2=burst_time;
-	}
-}
-
-
 
 public class simulator implements Runnable{
 
@@ -450,3 +436,15 @@ public class simulator implements Runnable{
 		
 	}    
 } 
+
+class Process{
+	int pid,arrival_time,burst_time,burst_time2;
+	int time_quantum; //time_quantum for RR
+	public Process(int pid,int arrival_time,int burst_time,int time_quantum){
+		this.pid=pid;
+		this.arrival_time=arrival_time;
+		this.burst_time=burst_time;
+		this.time_quantum=time_quantum;
+		this.burst_time2=burst_time;
+	}
+}
